@@ -19,6 +19,10 @@ import { WebviewDirective } from './directives/webview.directive';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
 
+import { NgxAddressModule } from 'ngx-address';
+import { AddressDataChinaService } from 'ngx-address/data/china';
+import { NgxQRCodeModule } from 'ngx-qrcode2';
+
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -41,9 +45,14 @@ export function HttpLoaderFactory(http: HttpClient) {
         useFactory: (HttpLoaderFactory),
         deps: [HttpClient]
       }
-    })
+    }),
+    NgxAddressModule,
+    NgxQRCodeModule
   ],
-  providers: [ElectronService],
+  providers: [
+    ElectronService, 
+    AddressDataChinaService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
