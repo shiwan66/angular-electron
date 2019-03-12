@@ -1,5 +1,41 @@
 <div class="container">
-  <h1 class="title">
-    {{ 'PAGES.HOME.TITLE' | translate }}
-  </h1>
+  <div class="content">
+    <div class="row">
+      <div class="col-md-7">
+          <form>
+              <div class="form-group">
+                <label for="exampleInputaddress">区域选择</label>
+                <ngx-address [(ngModel)]="code" name="address" [options]="opt" (onSelected)="onCustomSelected($event)"></ngx-address>
+                <small *ngIf="false" id="addressHelp" class="form-text text-danger">We'll never share your address with anyone else.</small>
+              </div>
+              <div class="form-group">
+                <label for="exampleInputpingying">拼音代码</label>
+                <input type="text" [(ngModel)]="pystr" name="exampleInputpingying" class="form-control" id="exampleInputpingying" aria-describedby="pingyingHelp" placeholder="拼音首字母">
+                <small *ngIf="false" id="pingyingHelp" class="form-text text-danger">We'll never share your pingying with anyone else.</small>
+              </div>
+              <div class="form-group">
+                <label for="exampleInputip">网关IP</label>
+                <input type="text" [(ngModel)]="ipstr" name="exampleInputip" class="form-control" id="exampleInputip" aria-describedby="ipHelp" placeholder="xx.xx.xx.xx">
+                <small *ngIf="false" id="ipHelp" class="form-text text-danger">We'll never share your ip with anyone else.</small>
+              </div>
+              <div><small *ngIf="false" id="registry" class="form-text text-danger">We'll never share your ip with anyone else.</small></div>
+              <button type="button" class="btn btn-info mr-2">预览</button>
+              <button type="button" class="btn btn-primary">注册</button>
+            </form>
+      </div>
+      <div class="col-md-5">  
+        <div class="text-center">
+            <ngx-qrcode 
+              [qrc-element-type]="elementType" 
+              [qrc-value] = "value"
+              qrc-class = "aclass"
+              qrc-errorCorrectionLevel = "L">
+            </ngx-qrcode>
+        </div>
+        <div class="form-group">
+          <span class="form-control">{{code}}{{pystr}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
