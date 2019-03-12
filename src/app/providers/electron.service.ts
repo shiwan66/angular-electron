@@ -5,6 +5,9 @@ import { Injectable } from '@angular/core';
 import { ipcRenderer, webFrame, remote } from 'electron';
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { concatAll, map  } from 'rxjs/operators';
 
 @Injectable()
 export class ElectronService {
@@ -15,7 +18,8 @@ export class ElectronService {
   childProcess: typeof childProcess;
   fs: typeof fs;
 
-  constructor() {
+  constructor(
+    private http: HttpClient) {
     // Conditional imports
     if (this.isElectron()) {
       this.ipcRenderer = window.require('electron').ipcRenderer;
@@ -31,4 +35,8 @@ export class ElectronService {
     return window && window.process && window.process.type;
   }
 
+  registry(ip, code): Observable<any> {
+    let url = `http://${ip}/api/tenant/registry`;
+    return this.http.post(url, {code:code});
+  }
 }
