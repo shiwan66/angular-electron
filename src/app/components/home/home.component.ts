@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AddressDataChinaService } from 'ngx-address/data/china';
-import { ElectronService } from '../../providers/electron.service'
+import { ElectronService } from '../../providers/electron.service';
+declare var jQuery:any;
 
 @Component({
   selector: 'app-home',
@@ -20,8 +21,8 @@ export class HomeComponent implements OnInit {
   elementType = 'url';
   get value() {
     let str = "";
-    if(this.code != null && this.code != undefined) str+=this.code;
     if(this.pystr != null && this.pystr != undefined) str+=this.pystr;
+    if(this.code != null && this.code != undefined) str+=this.code;
     return str;
   };
   isError: boolean = false;
@@ -35,6 +36,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+    
   }
 
   onCustomSelected(result) {
@@ -54,9 +56,35 @@ export class HomeComponent implements OnInit {
         error => {
           this.errorMsg = "ip错误或网络异常！"
           this.isError = true;
-          setTimeout(()=>{this.isError=false;this.loading = false;},2000);
+          setTimeout(()=>{this.isError=false;this.loading = false;},2000);          
         }
       );
+      this.saveFiles();
     }
+  }
+
+  saveFiles() {
+    var imgbse = jQuery('#qrcodeBox').find('img').eq(0).attr('src');
+    //过滤data:URL
+    var base64Data = imgbse.replace(/^data:image\/\w+;base64,/, "");
+    var dataBuffer = new Buffer(base64Data, 'base64');
+    this.electronSvc.saveFile(dataBuffer, 'qrcode.png');
+
+    var confbuffer = this.electronSvc.repFileStrTobase(/\%ip\%/g, this.ipstr, /\%tenant\%/g, this.value, 'http.txt');
+    this.electronSvc.saveFile(confbuffer, 'http.conf')
+
+    this.electronSvc.saveFile(new Buffer(this.value), 'security.txt');
+  }
+
+  download() {
+    fetch('/assets/background.jpg').then(res => res.blob().then(blob => {
+      var a = document.createElement('a');
+      var url = window.URL.createObjectURL(blob);
+      var filename = 'myfile.jpg';
+      a.href = url;
+      a.download = filename;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }))
   }
 }

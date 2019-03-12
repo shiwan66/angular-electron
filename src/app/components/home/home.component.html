@@ -23,22 +23,26 @@
               </div>
               <p *ngIf="isError" id="registry" class="form-text text-danger">{{errorMsg}}</p>
               <!-- <button type="button" class="btn btn-info mr-2">预览</button> -->
-              <button (click)="registry()" [disabled]="!code || !pystr || !ipstr || loading" type="button" class="btn btn-primary">注册</button>
             </form>
       </div>
       <div class="col-md-5">  
-        <div class="text-center" style="min-height: 180px;">
+        <div id="qrcodeBox" class="text-center" style="min-height: 180px;">
             <ngx-qrcode 
               [qrc-element-type]="elementType" 
               [qrc-value] = "value"
               qrc-class = "aclass"
+              qrc-version="4"
               qrc-errorCorrectionLevel = "L">
             </ngx-qrcode>
         </div>
         <div class="form-group">
-          <span class="form-control">{{code}}{{pystr}}</span>
+          <span class="form-control">{{value}}</span>
         </div>
       </div>
-    </div>
+    </div>    
+    <button (click)="registry()" [disabled]="!code || !pystr || !ipstr || loading" type="button" class="btn btn-primary">注册</button>
+
+    <!-- <a href="/assets/background.jpg" download="filename.png">Download file</a> -->
+    <button class="btn btn-info" (click)="download()">下载</button>
   </div>
 </div>

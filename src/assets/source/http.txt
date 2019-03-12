@@ -1,0 +1,16 @@
+set $%tenant%_tenant_id %tenant%;
+set $%tenant%_backend 'http://%ip%:8080';
+set $%tenant%_limsrepoend 'http://%ip%:8003';
+set $%tenant%_limsbpm 'http://%ip%:8001';
+# Temporarily fixed by hainaCloud
+set $%tenant%_repoend 'http://47.92.33.38:8890';
+set $%tenant%_reportend 'http://47.92.33.38:8891';
+set $%tenant%_pluginend 'http://47.92.33.38:8801';
+if ($http_tenantid = $%tenant%_tenant_id) {
+    set $backend "$%tenant%_backend";
+    set $limsrepoend "$%tenant%_limsrepoend";
+    set $limsbpm "$%tenant%_limsbpm";
+    set $repoend "$%tenant%_repoend";
+    set $reportend "$%tenant%_reportend";
+    set $pluginend "$%tenant%_pluginend";
+}
