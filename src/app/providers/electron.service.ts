@@ -6,8 +6,9 @@ import { ipcRenderer, webFrame, remote } from 'electron';
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as adm_zip from 'adm-zip';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, zip } from 'rxjs';
 
 @Injectable()
 export class ElectronService {
@@ -18,6 +19,7 @@ export class ElectronService {
   childProcess: typeof childProcess;
   fs: typeof fs;
   path: typeof path;
+  adm_zip: typeof adm_zip;
   _path: string;
 
   constructor(
@@ -31,6 +33,7 @@ export class ElectronService {
       this.childProcess = window.require('child_process');
       this.fs = window.require('fs');
       this.path = window.require('path');
+      this.adm_zip = window.require('adm-zip');
 
       this.emptyTmpDir();
     }
@@ -131,5 +134,14 @@ export class ElectronService {
 
   saveFile(buffer: Buffer, filename: string) {
     this.fs.writeFileSync(this._path+`/${filename}`, buffer);
+  }
+
+  saveZip(dirname, callback) {
+    var that = this;
+    var zip = new this.adm_zip();
+    zip.addLocalFolder(dirname);
+    zip.writeZip(that.path.join(dirname, '..', 'resouce.zip'), function() {
+      callback(that.path.join(dirname, '..', 'resouce.zip'));
+    });
   }
 }

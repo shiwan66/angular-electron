@@ -74,17 +74,20 @@ export class HomeComponent implements OnInit {
     this.electronSvc.saveFile(confbuffer, 'http.conf')
 
     this.electronSvc.saveFile(new Buffer(this.value), 'security.txt');
+    this.download();
   }
 
   download() {
-    fetch('/assets/background.jpg').then(res => res.blob().then(blob => {
-      var a = document.createElement('a');
-      var url = window.URL.createObjectURL(blob);
-      var filename = 'myfile.jpg';
-      a.href = url;
-      a.download = filename;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    }))
+    this.electronSvc.saveZip(this.electronSvc.path.join(__dirname,'tmp'), path => {
+      fetch(path).then(res => res.blob().then(blob => {
+        var a = document.createElement('a');
+        var url = window.URL.createObjectURL(blob);
+        var filename = 'srouce.zip';
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }))
+    });
   }
 }
