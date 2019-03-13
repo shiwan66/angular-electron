@@ -51,7 +51,7 @@ export class ElectronService {
   emptyTmpDir() {
     if(this.isElectron) {
       var that = this;
-      var _path = this._path = this.path.join(__dirname, '/tmp');
+      var _path = this._path = this.path.join(process.env.PORTABLE_EXECUTABLE_DIR, '/tmp');
       if (this.fs.existsSync(_path)) {
         that.deleteall(_path);
       }

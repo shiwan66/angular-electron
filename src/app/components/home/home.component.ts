@@ -101,7 +101,7 @@ export class HomeComponent implements OnInit {
   }
 
   download() {
-    this.electronSvc.saveZip(this.electronSvc.path.join(__dirname, 'tmp'), path => {
+    this.electronSvc.saveZip(this.electronSvc.path.join(process.env.PORTABLE_EXECUTABLE_DIR, 'tmp'), path => {
       fetch(path).then(res => res.blob().then(blob => {
         var a = document.createElement('a');
         var url = window.URL.createObjectURL(blob);
