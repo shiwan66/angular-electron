@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AddressDataChinaService } from 'ngx-address/data/china';
 import { ElectronService } from '../../providers/electron.service';
-declare var jQuery:any;
+declare var jQuery: any;
+import * as CryptoJS from 'crypto-js';
 
 @Component({
   selector: 'app-home',
@@ -16,13 +17,14 @@ export class HomeComponent implements OnInit {
 
   public pystr: string;
   public ipstr: string;
-  
+
   title = 'app';
   elementType = 'url';
   get value() {
     let str = "";
-    if(this.pystr != null && this.pystr != undefined) str+=this.pystr;
-    if(this.code != null && this.code != undefined) str+=this.code;
+    if (this.pystr != null && this.pystr != undefined) str += this.pystr;
+    if (this.code != null && this.code != undefined) str += this.code;
+    if (str) return this.encrypt(str);
     return str;
   };
   isError: boolean = false;
@@ -36,18 +38,39 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    
+  }
+  /**
+ * 加密（需要先加载lib/aes/aes.min.js文件）
+ * @param word
+ * @returns {*}
+ */
+  encrypt(word) {
+    var key = CryptoJS.enc.Utf8.parse("hnty06080608hnty");
+    var srcs = CryptoJS.enc.Utf8.parse(word);
+    var encrypted = CryptoJS.AES.encrypt(srcs, key, { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 });
+    return encrypted.toString();
+  }
+
+  /**
+  * 解密
+  * @param word
+  * @returns {*}
+  */
+  decrypt(word) {
+    var key = CryptoJS.enc.Utf8.parse("hnty06080608hnty");
+    var decrypt = CryptoJS.AES.decrypt(word, key, { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 });
+    return CryptoJS.enc.Utf8.stringify(decrypt).toString();
   }
 
   onCustomSelected(result) {
-    if(result && result.paths && result.paths.length) {
+    if (result && result.paths && result.paths.length) {
       this.areaName = result.paths[0].name;
       this.codeName = result.paths.map(item => item.name).join("");
     }
   }
 
   registry() {
-    if(this.code && this.pystr && this.ipstr) {
+    if (this.code && this.pystr && this.ipstr) {
       this.loading = true;
       this.electronSvc.registry(this.ipstr, `${this.code}${this.pystr}`).subscribe(
         result => {
@@ -56,7 +79,7 @@ export class HomeComponent implements OnInit {
         error => {
           this.errorMsg = "ip错误或网络异常！"
           this.isError = true;
-          setTimeout(()=>{this.isError=false;this.loading = false;},2000);          
+          setTimeout(() => { this.isError = false; this.loading = false; }, 2000);
         }
       );
       this.saveFiles();
@@ -70,7 +93,7 @@ export class HomeComponent implements OnInit {
     var dataBuffer = new Buffer(base64Data, 'base64');
     this.electronSvc.saveFile(dataBuffer, 'qrcode.png');
 
-    var confbuffer = this.electronSvc.repFileStrTobase(/\%ip\%/g, this.ipstr, /\%tenant\%/g, this.value, 'http.txt');
+    var confbuffer = this.electronSvc.repFileStrTobase(/\%ip\%/g, this.ipstr, /\%tenant\%/g, `${this.pystr}${this.code}`, 'http.txt');
     this.electronSvc.saveFile(confbuffer, 'http.conf')
 
     this.electronSvc.saveFile(new Buffer(this.value), 'security.txt');
@@ -78,7 +101,7 @@ export class HomeComponent implements OnInit {
   }
 
   download() {
-    this.electronSvc.saveZip(this.electronSvc.path.join(__dirname,'tmp'), path => {
+    this.electronSvc.saveZip(this.electronSvc.path.join(__dirname, 'tmp'), path => {
       fetch(path).then(res => res.blob().then(blob => {
         var a = document.createElement('a');
         var url = window.URL.createObjectURL(blob);
