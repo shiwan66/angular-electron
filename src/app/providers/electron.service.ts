@@ -49,9 +49,13 @@ export class ElectronService {
   }
 
   emptyTmpDir() {
+    var that = this;
     if(this.isElectron) {
-      var that = this;
-      var _path = this._path = this.path.join(process.env.PORTABLE_EXECUTABLE_DIR, '/tmp');
+      if(process.env.PORTABLE_EXECUTABLE_DIR != undefined) {
+        var _path = this._path = this.path.join(process.env.PORTABLE_EXECUTABLE_DIR, '/tmp');
+      } else {
+        var _path = this._path = this.path.join(__dirname, '/tmp');
+      }
       if (this.fs.existsSync(_path)) {
         that.deleteall(_path);
       }
